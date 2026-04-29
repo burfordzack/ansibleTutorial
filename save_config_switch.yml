@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+  become:true
+  tasks: 
+
+  - name: save switch running config
+    apt:
+      Name: 

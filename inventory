@@ -1,2 +1,13 @@
-100.100.60.64
-100.100.60.59
+[switches]
+AIB-Suplus-AS2      ansible_host=100.100.60.64
+AIB-ScreenPrint-AS2  ansible_host=100.100.60.59
+
+[switches:vars]
+# Use the short name for the connection
+ansible_connection=network_cli
+# Ensure this matches the collection you installed
+ansible_network_os=cisco.ios.ios
+# This tells Ansible to use the older but more compatible SSH engine
+ansible_ssh_type=paramiko
+# Keep your SSH workarounds
+ansible_ssh_common_args='-o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa'

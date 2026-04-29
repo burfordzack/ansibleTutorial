@@ -1,0 +1,38 @@
+---
+- name: Add VLAN 777 with Credential Fallback
+  hosts: switches
+  gather_facts: no
+
+  tasks:
+    - name: Attempt VLAN Configuration
+      block:
+        - name: Try applying config via RADIUS
+          cisco.ios.ios_config:
+            lines:
+              - vlan 777
+          vars:
+            # These variables override the inventory for this specific task
+            ansible_connection: network_cli
+            ansible_network_os: cisco.ios.ios
+            ansible_user: "{{ radius_user }}"
+            ansible_password: "{{ radius_pass }}"
+          register: vlan_output
+
+      rescue:
+        - name: RADIUS failed, trying Local Admin credentials
+          cisco.ios.ios_config:
+            lines:
+              - vlan 777
+          vars:
+            ansible_connection: network_cli
+            ansible_network_os: cisco.ios.ios
+            ansible_user: "{{ local_user }}"
+            ansible_password: "{{ local_pass }}"
+          register: vlan_output
+
+    - name: Display Result
+      debug:
+        msg: 
+          - "Host: {{ inventory_hostname }}"
+          - "Status: {{ 'Changes made' if vlan_output.changed else 'No changes needed' }}"
+          - "Updates: {{ vlan_output.updates | default('None') }}"
